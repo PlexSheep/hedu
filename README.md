@@ -7,3 +7,8 @@
 [![cargo checks and tests](https://github.com/PlexSheep/hedu/actions/workflows/cargo.yaml/badge.svg)](https://github.com/PlexSheep/hedu/actions/workflows/cargo.yaml)
 
 Hex dumping tool written in Rust.
+
+* [Original Repository](https://git.cscherr.de/PlexSheep/hedu)
+* [GitHub Mirror](https://github.com/PlexSheep/hedu)
+* [crates.io](https://crates.io/crates/hedu)
+* [docs.rs](https://docs.rs/crate/hedu/)
