@@ -86,7 +86,6 @@ pub struct Cli {
     /// a data source, probably a file.
     ///
     /// If left empty or set as "-", the program will read from stdin.
-    // TODO: take many sources #60
     pub data_source: Vec<String>,
 }
 
