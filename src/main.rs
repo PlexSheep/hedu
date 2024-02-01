@@ -1,62 +1,33 @@
 //! # Executable for the hedu submodule
 //!
 //! Dump data to a fancy format.
-
-//// ATTRIBUTES ////////////////////////////////////////////////////////////////////////////////////
-// we want docs
-#![warn(missing_docs)]
-#![warn(rustdoc::missing_crate_level_docs)]
-// we want Debug everywhere.
-#![warn(missing_debug_implementations)]
-// enable clippy's extra lints, the pedantic version
 #![warn(clippy::pedantic)]
 
-//// IMPORTS ///////////////////////////////////////////////////////////////////////////////////////
+use std::{fs::File, io::IsTerminal, path::PathBuf};
 
-use libpt::{bintols::hedu::*, log::*};
+use libpt::log::*;
 
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 
-use std::{fs::File, io::IsTerminal, path::PathBuf};
+mod dumper;
+use dumper::*;
 
-//// TYPES /////////////////////////////////////////////////////////////////////////////////////////
-
-//// CONSTANTS /////////////////////////////////////////////////////////////////////////////////////
-/// short about section displayed in help
-const ABOUT_ROOT: &'static str = r##"
-Dumps data in fancy formats.
-"##;
-/// longer about section displayed in help, is combined with [the short help](ABOUT_ROOT)
-static LONG_ABOUT_ROOT: &'static str = r##"
-
-    libpt is a personal general purpose library, offering this executable, a python module and a
-    dynamic library.
-"##;
-
-//// STATICS ///////////////////////////////////////////////////////////////////////////////////////
-
-//// MACROS ////////////////////////////////////////////////////////////////////////////////////////
-
-//// ENUMS /////////////////////////////////////////////////////////////////////////////////////////
-
-//// STRUCTS ///////////////////////////////////////////////////////////////////////////////////////
-/// defines CLI interface
 #[derive(Debug, Clone, Parser)]
 #[command(
     author,
     version,
-    about = ABOUT_ROOT,
-    long_about = format!("{}{}", ABOUT_ROOT ,LONG_ABOUT_ROOT),
-    help_template =
-r#"{about-section}
+    about,
+    long_about,
+    help_template = r#"{about-section}
 {usage-heading} {usage}
 {all-args}{tab}
 
-libpt: {version}
+autocrate: {version}
 Author: {author-with-newline}
 "#
-    )]
+)]
+/// Hexdumper written in Rust
 pub struct Cli {
     // clap_verbosity_flag seems to make this a global option implicitly
     /// set a verbosity, multiple allowed (f.e. -vvv)
@@ -89,11 +60,6 @@ pub struct Cli {
     pub data_source: Vec<String>,
 }
 
-//// IMPLEMENTATION ////////////////////////////////////////////////////////////////////////////////
-
-//// PUBLIC FUNCTIONS //////////////////////////////////////////////////////////////////////////////
-
-//// PRIVATE FUNCTIONS /////////////////////////////////////////////////////////////////////////////
 fn main() {
     let mut cli = cli_parse();
     let mut sources: Vec<Box<dyn DataSource>> = Vec::new();
@@ -150,7 +116,7 @@ fn main() {
         }
     }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+
 fn cli_parse() -> Cli {
     let cli = Cli::parse();
     let ll: Level = match cli.verbose.log_level().unwrap().as_str() {
