@@ -172,4 +172,3 @@ fn cli_parse() -> Cli {
     }
     return cli;
 }
-
