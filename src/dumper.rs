@@ -2,7 +2,7 @@
 
 use std::io::{prelude::*, Read, SeekFrom};
 
-use anyhow::{bail, Result};
+use anyhow::Result;
 use libpt::bintols::display::humanbytes;
 use libpt::log::{debug, error, trace, warn};
 
@@ -137,7 +137,7 @@ impl Hedu {
             "******** {LINE_SEP_VERT} {:<49}",
             format!(
                 "(repeats {} lines)",
-                self.data_idx - start_line / (BYTES_PER_LINE) + 1
+                (self.data_idx - start_line / (BYTES_PER_LINE) + 1) / BYTES_PER_LINE
             )
         );
         if self.chars {
@@ -206,6 +206,8 @@ impl Hedu {
         self.display();
         Ok(())
     }
+
+    /// adjust the counters of the hedu struct, adding self.len
     #[inline]
     fn adjust_counters(&mut self) {
         self.rd_counter += self.len;
