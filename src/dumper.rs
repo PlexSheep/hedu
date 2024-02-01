@@ -195,7 +195,7 @@ impl Hedu {
 
         self.sep();
         self.display_buf += &format!(
-            "{:08X} {LINE_SEP_VERT} read total:\t\t    {:<8} {:<15}",
+            "{:08X} {LINE_SEP_VERT} read total:              {:<8} {:<15}",
             self.rd_counter,
             humanbytes(self.rd_counter),
             format!("({} B)", self.rd_counter)
