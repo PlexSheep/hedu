@@ -1,6 +1,6 @@
-//! # Executable for the hedu submodule
+//! # A simple hexdumper with a somewhat fancy format
 //!
-//! Dump data to a fancy format.
+//! Dump data from any readable source, such as the stdin or a file
 #![warn(clippy::pedantic)]
 
 use std::{fs::File, io::IsTerminal, path::PathBuf};

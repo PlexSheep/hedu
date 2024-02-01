@@ -1,9 +1,4 @@
-//! # Dump data
-//!
-//! This crate is part of [`pt`](../libpt/index.html), but can also be used as a standalone
-//! module.
-//!
-//! Hedu is made for hexdumping data. `libpt` offers a cli application using this module.
+//! # Underlying mechanisms of how hedu works with data
 
 use std::io::{prelude::*, Read, SeekFrom};
 
@@ -15,6 +10,23 @@ pub const BYTES_PER_LINE: usize = 16;
 pub const LINE_SEP_HORIZ: char = '─';
 pub const LINE_SEP_VERT: char = '│';
 pub const CHAR_BORDER: &'static str = "|";
+
+pub trait DataSource: Read {
+    fn skip(&mut self, length: usize) -> std::io::Result<()>;
+}
+impl DataSource for std::io::Stdin {
+    fn skip(&mut self, _length: usize) -> std::io::Result<()> {
+        warn!("can't skip bytes for the stdin!");
+        Ok(())
+    }
+}
+impl DataSource for std::fs::File {
+    fn skip(&mut self, length: usize) -> std::io::Result<()> {
+        self.seek(SeekFrom::Current(length as i64))?;
+        // returns the new position from the start, we don't need it here.
+        Ok(())
+    }
+}
 
 #[derive(Debug)]
 pub struct Hedu {
@@ -33,6 +45,7 @@ pub struct Hedu {
 }
 
 impl Hedu {
+    /// create a new hedu struct, initializing all kinds of configs and values needed while running
     pub fn new(chars: bool, skip: usize, show_identical: bool, limit: usize) -> Self {
         Hedu {
             chars,
@@ -49,11 +62,15 @@ impl Hedu {
             first_iter: true,
         }
     }
+
+    /// print the display buffer to the stdout
     #[inline]
     pub fn display(&mut self) {
         println!("{}", self.display_buf);
         self.display_buf = String::new();
     }
+
+    /// display a separator line
     #[inline]
     pub fn sep(&mut self) {
         if self.chars {
@@ -63,11 +80,15 @@ impl Hedu {
         }
         self.display();
     }
+
+    /// display a newline
     #[inline]
     pub fn newline(&mut self) {
         self.display_buf += "\n";
         self.display();
     }
+
+    /// display the dump of a single line of data
     fn dump_a_line(&mut self) {
         self.display_buf += &format!("{:08X} {LINE_SEP_VERT} ", self.data_idx);
         if self.len != 0 {
@@ -105,6 +126,7 @@ impl Hedu {
         self.display();
     }
 
+    /// skip duplicate lines and display skip info
     fn skip_lines(&mut self, data: &mut dyn DataSource) -> Result<()> {
         trace!(buf = format!("{:?}", self.buf), "found a duplicating line");
         let start_line = self.data_idx;
@@ -128,6 +150,8 @@ impl Hedu {
         self.display();
         Ok(())
     }
+
+    /// dump a data sources contents according to the set configs
     pub fn dump(&mut self, data: &mut dyn DataSource) -> Result<()> {
         // skip a given number of bytes
         if self.skip > 0 {
@@ -188,6 +212,7 @@ impl Hedu {
         self.data_idx += self.len;
     }
 
+    /// read data from the data source
     fn rd_data(&mut self, data: &mut dyn DataSource) -> Result<()> {
         match data.read(&mut self.buf[self.alt_buf]) {
             Ok(mut len) => {
@@ -197,33 +222,17 @@ impl Hedu {
                 }
                 self.len = len;
                 self.adjust_counters();
-                return Ok(());
+                Ok(())
             }
             Err(err) => {
                 error!("error while reading data: {err}");
-                bail!(err)
+                Err(err.into())
             }
         }
     }
 }
 
-pub trait DataSource: Read {
-    fn skip(&mut self, length: usize) -> std::io::Result<()>;
-}
-impl DataSource for std::io::Stdin {
-    fn skip(&mut self, _length: usize) -> std::io::Result<()> {
-        warn!("can't skip bytes for the stdin!");
-        Ok(())
-    }
-}
-impl DataSource for std::fs::File {
-    fn skip(&mut self, length: usize) -> std::io::Result<()> {
-        self.seek(SeekFrom::Current(length as i64))?;
-        // returns the new position from the start, we don't need it here.
-        Ok(())
-    }
-}
-
+/// interpret characters for the --chars option
 fn mask_chars(c: char) -> char {
     if c.is_ascii_graphic() {
         return c;
