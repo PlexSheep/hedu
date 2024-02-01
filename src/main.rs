@@ -23,7 +23,7 @@ use dumper::*;
 {usage-heading} {usage}
 {all-args}{tab}
 
-autocrate: {version}
+{name}: {version}
 Author: {author-with-newline}
 "#
 )]
