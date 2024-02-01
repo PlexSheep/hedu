@@ -125,7 +125,6 @@ impl Hedu {
             buf = format!("{:X?}", self.buf),
             "dumping buf after line skip"
         );
-        self.alt_buf ^= 1; // read into the other buf, so we can check for sameness
         self.display();
         Ok(())
     }
