@@ -29,10 +29,10 @@ jobs:
           echo '[registries.cscherr]' >> ~/.cargo/config.toml
           echo 'index = "https://git.cscherr.de/PlexSheep/_cargo-index.git"' >> ~/.cargo/config.toml
           cat ~/.cargo/config.toml
-      - name: cargo check
-        run: cargo check --all-features --all-targets
-      - name: cargo fix
-        run: cargo fix --all-features --all-targets
+      - name: cargo clippy check
+        run: cargo clippy --all-features --all-targets
+      - name: cargo clippy fix
+        run: cargo clippy --fix --all-features --all-targets
       - name: cargo fmt
         run: cargo fmt --all
       - name: cargo test

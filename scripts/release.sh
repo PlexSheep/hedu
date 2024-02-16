@@ -7,7 +7,7 @@ BODY="
 $(git log $(git describe --tags --abbrev=0)..HEAD --pretty="- %s" --oneline --decorate)
 "
 USER=PlexSheep
-git tag "v$NEW_VERSION-test" || echo "could not tag"
+git tag "v$NEW_VERSION" || echo "could not tag"
 curl -X 'POST' \
 	'https://git.cscherr.de/api/v1/repos/PlexSheep/'$REPO'/releases' \
 	-H 'accept: application/json' \
