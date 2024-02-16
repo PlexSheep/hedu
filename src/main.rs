@@ -5,13 +5,13 @@
 
 use std::{fs::File, io::IsTerminal, path::PathBuf};
 
-use libpt::log::*;
+use libpt::log::{error, trace, warn, Level, Logger};
 
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 
 mod dumper;
-use dumper::*;
+use dumper::{DataSource, Hedu};
 
 #[derive(Debug, Clone, Parser)]
 #[command(
@@ -63,7 +63,7 @@ pub struct Cli {
 fn main() {
     let mut cli = cli_parse();
     let mut sources: Vec<Box<dyn DataSource>> = Vec::new();
-    if cli.data_source.len() > 0 && cli.data_source[0] != "-" {
+    if !cli.data_source.is_empty() && cli.data_source[0] != "-" {
         for data_source in &cli.data_source {
             let data_source: PathBuf = PathBuf::from(data_source);
             if data_source.is_dir() {
@@ -89,7 +89,7 @@ fn main() {
         }
         // just for the little header
         cli.data_source = Vec::new();
-        cli.data_source.push(format!("stdin"));
+        cli.data_source.push("stdin".to_string());
         sources.push(Box::new(stdin));
     }
     for (i, source) in sources.iter_mut().enumerate() {
@@ -105,7 +105,7 @@ fn main() {
             }
         }
         match config.dump(&mut **source) {
-            Ok(_) => (),
+            Ok(()) => (),
             Err(err) => {
                 error!("Could not dump data of file: {err}");
                 std::process::exit(3);
@@ -135,5 +135,5 @@ fn cli_parse() -> Cli {
         // less verbose version
         Logger::init_mini(Some(ll)).expect("could not initialize Logger");
     }
-    return cli;
+    cli
 }
