@@ -19,7 +19,9 @@ jobs:
       - name: install rust
         uses: dtolnay/rust-toolchain@stable
       - name: install additional rust things
-        run: rustup component add rustfmt
+        run: |
+          rustup component add rustfmt
+          rustup component add clippy
       - name: config custom registry
         run: |
           mkdir -p ~/.cargo/
