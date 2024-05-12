@@ -9,7 +9,7 @@ use libpt::log::{debug, error, trace, warn};
 pub const BYTES_PER_LINE: usize = 16;
 pub const LINE_SEP_HORIZ: char = '─';
 pub const LINE_SEP_VERT: char = '│';
-pub const CHAR_BORDER: &'static str = "|";
+pub const CHAR_BORDER: &str = "|";
 
 pub trait DataSource: Read {
     fn skip(&mut self, length: usize) -> std::io::Result<()>;
@@ -93,16 +93,16 @@ impl Hedu {
         self.display_buf += &format!("{:08X} {LINE_SEP_VERT} ", self.data_idx);
         if self.len != 0 {
             for i in 0..self.len {
-                if i as usize % BYTES_PER_LINE == BYTES_PER_LINE / 2 {
+                if i % BYTES_PER_LINE == BYTES_PER_LINE / 2 {
                     self.display_buf += " ";
                 }
                 self.display_buf += &format!("{:02X} ", self.buf[self.alt_buf][i]);
             }
             if self.len == BYTES_PER_LINE / 2 {
-                self.display_buf += " "
+                self.display_buf += " ";
             }
             for i in 0..(BYTES_PER_LINE - self.len) {
-                if i as usize % BYTES_PER_LINE == BYTES_PER_LINE / 2 {
+                if i % BYTES_PER_LINE == BYTES_PER_LINE / 2 {
                     self.display_buf += " ";
                 }
                 self.display_buf += "   ";
@@ -237,7 +237,7 @@ impl Hedu {
 /// interpret characters for the --chars option
 fn mask_chars(c: char) -> char {
     if c.is_ascii_graphic() {
-        return c;
+        c
     } else if c == '\n' {
         return '↩';
     } else if c == ' ' {
