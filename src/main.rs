@@ -8,7 +8,6 @@ use std::{fs::File, io::IsTerminal, path::PathBuf};
 use libpt::log::{error, trace, warn, Level, Logger};
 
 use clap::Parser;
-use clap_verbosity_flag::{InfoLevel, Verbosity};
 
 mod dumper;
 use dumper::{DataSource, Hedu};
@@ -29,10 +28,9 @@ Author: {author-with-newline}
 )]
 /// Hexdumper written in Rust
 pub struct Cli {
-    // clap_verbosity_flag seems to make this a global option implicitly
-    /// set a verbosity, multiple allowed (f.e. -vvv)
-    #[command(flatten)]
-    pub verbose: Verbosity<InfoLevel>,
+    /// show more details
+    #[arg(short, long)]
+    pub verbose: bool,
 
     /// show additional logging meta data
     #[arg(long)]
@@ -119,15 +117,10 @@ fn main() {
 
 fn cli_parse() -> Cli {
     let cli = Cli::parse();
-    let ll: Level = match cli.verbose.log_level().unwrap().as_str() {
-        "TRACE" => Level::TRACE,
-        "DEBUG" => Level::DEBUG,
-        "INFO" => Level::INFO,
-        "WARN" => Level::WARN,
-        "ERROR" => Level::ERROR,
-        _ => {
-            unreachable!();
-        }
+    let ll: Level = if cli.verbose {
+        Level::INFO
+    } else {
+        Level::DEBUG
     };
     if cli.meta {
         let _ = Logger::builder().max_level(ll).build();
