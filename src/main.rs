@@ -55,6 +55,8 @@ pub struct Cli {
     /// a data source, probably a file.
     ///
     /// If left empty or set as "-", the program will read from stdin.
+    ///
+    /// Directories cannot be dumped.
     pub data_source: Vec<String>,
 }
 
