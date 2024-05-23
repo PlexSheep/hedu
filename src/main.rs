@@ -128,7 +128,7 @@ fn cli_parse() -> Cli {
         let _ = Logger::builder().max_level(ll).build();
     } else {
         // less verbose version
-        let _ = Logger::builder().build();
+        let _ = Logger::builder().show_time(false).build();
     }
     cli
 }
