@@ -67,7 +67,10 @@ fn main() {
         for data_source in &cli.data_source {
             let data_source: PathBuf = PathBuf::from(data_source);
             if data_source.is_dir() {
-                warn!("'{:?}' is a directory and cannot be dumped, skipping", data_source);
+                warn!(
+                    "'{:?}' is a directory and cannot be dumped, skipping",
+                    data_source
+                );
                 // std::process::exit(1);
                 continue;
             }
