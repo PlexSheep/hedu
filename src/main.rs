@@ -5,13 +5,12 @@
 
 use std::{fs::File, io::IsTerminal, path::PathBuf};
 
-use libpt::log::*;
+use libpt::log::{error, trace, warn, Level, Logger};
 
 use clap::Parser;
-use clap_verbosity_flag::{InfoLevel, Verbosity};
 
 mod dumper;
-use dumper::*;
+use dumper::{DataSource, Hedu};
 
 #[derive(Debug, Clone, Parser)]
 #[command(
@@ -29,10 +28,9 @@ Author: {author-with-newline}
 )]
 /// Hexdumper written in Rust
 pub struct Cli {
-    // clap_verbosity_flag seems to make this a global option implicitly
-    /// set a verbosity, multiple allowed (f.e. -vvv)
-    #[command(flatten)]
-    pub verbose: Verbosity<InfoLevel>,
+    /// show more details
+    #[arg(short, long)]
+    pub verbose: bool,
 
     /// show additional logging meta data
     #[arg(long)]
@@ -57,17 +55,22 @@ pub struct Cli {
     /// a data source, probably a file.
     ///
     /// If left empty or set as "-", the program will read from stdin.
+    ///
+    /// Directories cannot be dumped.
     pub data_source: Vec<String>,
 }
 
 fn main() {
     let mut cli = cli_parse();
     let mut sources: Vec<Box<dyn DataSource>> = Vec::new();
-    if cli.data_source.len() > 0 && cli.data_source[0] != "-" {
+    if !cli.data_source.is_empty() && !cli.data_source.contains(&"-".to_string()) {
         for data_source in &cli.data_source {
             let data_source: PathBuf = PathBuf::from(data_source);
             if data_source.is_dir() {
-                warn!("Not a file {:?}, skipping", data_source);
+                warn!(
+                    "'{:?}' is a directory and cannot be dumped, skipping",
+                    data_source
+                );
                 // std::process::exit(1);
                 continue;
             }
@@ -89,7 +92,7 @@ fn main() {
         }
         // just for the little header
         cli.data_source = Vec::new();
-        cli.data_source.push(format!("stdin"));
+        cli.data_source.push("stdin".to_string());
         sources.push(Box::new(stdin));
     }
     for (i, source) in sources.iter_mut().enumerate() {
@@ -105,7 +108,7 @@ fn main() {
             }
         }
         match config.dump(&mut **source) {
-            Ok(_) => (),
+            Ok(()) => (),
             Err(err) => {
                 error!("Could not dump data of file: {err}");
                 std::process::exit(3);
@@ -119,21 +122,16 @@ fn main() {
 
 fn cli_parse() -> Cli {
     let cli = Cli::parse();
-    let ll: Level = match cli.verbose.log_level().unwrap().as_str() {
-        "TRACE" => Level::TRACE,
-        "DEBUG" => Level::DEBUG,
-        "INFO" => Level::INFO,
-        "WARN" => Level::WARN,
-        "ERROR" => Level::ERROR,
-        _ => {
-            unreachable!();
-        }
+    let ll: Level = if cli.verbose {
+        Level::INFO
+    } else {
+        Level::DEBUG
     };
     if cli.meta {
-        Logger::init(None, Some(ll), false).expect("could not initialize Logger");
+        let _ = Logger::builder().max_level(ll).build();
     } else {
         // less verbose version
-        Logger::init_mini(Some(ll)).expect("could not initialize Logger");
+        let _ = Logger::builder().show_time(false).build();
     }
-    return cli;
+    cli
 }

@@ -1,6 +1,6 @@
 [package]
 name = "hedu"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 publish = true
 authors = ["Christoph J. Scherr <software@cscherr.de>"]
@@ -12,8 +12,6 @@ repository = "https://git.cscherr.de/PlexSheep/hedu"
 keywords = ["hexdumper"]
 
 [dependencies]
-libpt = { version = "0.3.11", features = ["log", "bintols"] }
+libpt = { version = "0.5.1", features = ["bintols", "log"], default-features = false }
 clap = { version = "4.4.4", features = ["derive", "help"] }
-clap-num = { version = "1.0.2" }
-clap-verbosity-flag = { version = "2.0.1" }
 anyhow = "1.0.79"
