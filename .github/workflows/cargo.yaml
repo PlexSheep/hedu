@@ -1,9 +1,15 @@
-name: cargo devel CI
+name: Rust CI
 on:
+  pull_request:
+    branches:
+      - '**'
   push:
     branches:
       - '**'
       # - '!master'
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   CI:
@@ -44,4 +50,4 @@ jobs:
         with:
           # Optional. Commit message for the created commit.
           # Defaults to "Apply automatic changes"
-          commit_message: automatic cargo CI changes
+          commit_message: "ci: automatic Rust CI changes"

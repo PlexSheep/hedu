@@ -7,30 +7,25 @@ permissions:
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
 
   # Release unpublished packages.
   release-plz-release:
     name: Release-plz release
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install Rust toolchain
-        uses: https://github.com/dtolnay/rust-toolchain@stable
-      # - name: Manually Install binaries
-      #   uses: https://github.com/taiki-e/install-action@v2
-      #   with:
-      #     tool: cargo-semver-checks@0.35, release-plz # hack
+        uses: dtolnay/rust-toolchain@stable
       - name: Run release-plz
-        uses: https://github.com/MarcoIeni/release-plz-action@v0.5.79
+        uses: MarcoIeni/release-plz-action@v0.5
         with:
           command: release
-          backend: gitea
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
@@ -38,7 +33,7 @@ jobs:
   # Create a PR with the new versions and changelog, preparing the next release.
   release-plz-pr:
     name: Release-plz PR
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     concurrency:
       group: release-plz-${{ github.ref }}
       cancel-in-progress: false
@@ -48,16 +43,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Rust toolchain
-        uses: https://github.com/dtolnay/rust-toolchain@stable
-      # - name: Manually Install binaries
-      #   uses: https://github.com/taiki-e/install-action@v2
-      #   with:
-      #     tool: cargo-semver-checks@0.35, release-plz@0.3.102 # hack
+        uses: dtolnay/rust-toolchain@stable
       - name: Run release-plz
-        uses: https://github.com/MarcoIeni/release-plz-action@v0.5.79
+        uses: MarcoIeni/release-plz-action@v0.5
         with:
           command: release-pr
-          backend: gitea
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
