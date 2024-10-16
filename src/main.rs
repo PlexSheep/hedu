@@ -99,13 +99,10 @@ fn main() {
         let mut config = Hedu::new(cli.chars, cli.skip, cli.show_identical, cli.limit);
         // FIXME: find a better way to get the file name
         // Currently, skipped sources make an extra newline here.
-        match config.chars {
-            false => {
-                println!("{:─^59}", format!(" {} ", cli.data_source[i]));
-            }
-            true => {
-                println!("{:─^80}", format!(" {} ", cli.data_source[i]));
-            }
+        if config.chars {
+            println!("{:─^80}", format!(" {} ", cli.data_source[i]));
+        } else {
+            println!("{:─^59}", format!(" {} ", cli.data_source[i]));
         }
         match config.dump(&mut **source) {
             Ok(()) => (),
