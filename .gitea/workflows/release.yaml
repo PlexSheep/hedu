@@ -22,12 +22,12 @@ jobs:
           fetch-depth: 0
       - name: Install Rust toolchain
         uses: https://github.com/dtolnay/rust-toolchain@stable
-      - name: Manually Install binaries
-        uses: https://github.com/taiki-e/install-action@v2
-        with:
-          tool: cargo-semver-checks@0.35, release-plz@0.3.102 # hack
+      # - name: Manually Install binaries
+      #   uses: https://github.com/taiki-e/install-action@v2
+      #   with:
+      #     tool: cargo-semver-checks@0.35, release-plz # hack
       - name: Run release-plz
-        uses: https://github.com/MarcoIeni/release-plz-action@v0.5
+        uses: https://github.com/MarcoIeni/release-plz-action@v0.5.79
         with:
           command: release
           backend: gitea
@@ -49,12 +49,12 @@ jobs:
           fetch-depth: 0
       - name: Install Rust toolchain
         uses: https://github.com/dtolnay/rust-toolchain@stable
-      - name: Manually Install binaries
-        uses: https://github.com/taiki-e/install-action@v2
-        with:
-          tool: cargo-semver-checks@0.35, release-plz@0.3.102 # hack
+      # - name: Manually Install binaries
+      #   uses: https://github.com/taiki-e/install-action@v2
+      #   with:
+      #     tool: cargo-semver-checks@0.35, release-plz@0.3.102 # hack
       - name: Run release-plz
-        uses: https://github.com/MarcoIeni/release-plz-action@v0.5
+        uses: https://github.com/MarcoIeni/release-plz-action@v0.5.79
         with:
           command: release-pr
           backend: gitea
