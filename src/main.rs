@@ -81,7 +81,7 @@ fn main() {
                     error!("Could not open '{:?}': {err}", data_source);
                     std::process::exit(1);
                 }
-            };
+            }
         }
     } else {
         trace!("Trying to open stdin");
