@@ -239,12 +239,12 @@ fn mask_chars(c: char) -> char {
     if c.is_ascii_graphic() {
         c
     } else if c == '\n' {
-        return '↩';
+        '↩'
     } else if c == ' ' {
-        return '␣';
+        '␣'
     } else if c == '\t' {
-        return '⭾';
+        '⭾'
     } else {
-        return '�';
+        '�'
     }
 }
